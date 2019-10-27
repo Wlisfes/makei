@@ -7,10 +7,12 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  
+
   //session配置
   app.use(session(sessionCofn))
 
+  //Cors
+  app.enableCors();
 
   //静态资源
   app.useStaticAssets(join(__dirname,`..`, `public`))

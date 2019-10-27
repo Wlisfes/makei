@@ -32,6 +32,10 @@ export const AdminSchema = new mongoose.Schema({
     status: {
         type: Boolean,
         default: true
+    },
+    add_time: {
+        type: Number,
+        default: Date.now
     }
 })
 
