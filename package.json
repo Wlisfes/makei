@@ -28,6 +28,7 @@
     "class-validator": "^0.10.2",
     "express-session": "^1.17.0",
     "md5": "^2.2.1",
+    "moment": "^2.24.0",
     "mongoose": "^5.7.7",
     "reflect-metadata": "^0.1.12",
     "rimraf": "^2.6.2",

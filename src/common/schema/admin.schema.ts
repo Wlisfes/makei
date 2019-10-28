@@ -1,4 +1,5 @@
 import * as mongoose from 'mongoose';
+import * as moment from 'moment';
 
 export const AdminSchema = new mongoose.Schema({
     nickName: {
@@ -34,8 +35,8 @@ export const AdminSchema = new mongoose.Schema({
         default: true
     },
     add_time: {
-        type: Number,
-        default: Date.now
+        type: String,
+        default: () => moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
     }
 })
 

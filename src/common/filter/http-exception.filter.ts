@@ -6,11 +6,11 @@ import {
   HttpStatus
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import * as moment from 'moment';
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {
-    const date = new Date()
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
@@ -21,7 +21,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     const errorResponse = {
       code: status,
-      timestamp: `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`,
+      timestamp: moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
       path: request.url,
       method: request.method,
       message:

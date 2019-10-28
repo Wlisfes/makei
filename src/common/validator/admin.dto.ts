@@ -30,7 +30,9 @@ export class RegisterDto {
 
 //登录验证
 export class LoginDto {
-    @IsString()
+    @IsString({
+        message: 'userName不能为空！'
+    })
     @IsNotEmpty({
         message: 'userName不能为空！'
     })

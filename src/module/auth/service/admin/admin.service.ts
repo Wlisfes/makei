@@ -9,13 +9,14 @@ export class AdminService {
     constructor(
         @InjectModel('Admin') private readonly adminModel: Model<Admin>
     ){}
+    private Keys: `status nickName userName Avatar Email add_time`
 
     public getmodel() {
         return this.adminModel
     }
 
 
-    //管理员注册
+    //注册
     public async postRegister(
         AdminData: Admin = {}
     ): Promise<any> {
@@ -24,11 +25,9 @@ export class AdminService {
     }
 
 
-    //查询全部管理员
-    public async findAll(
-        AdminData: Admin = {}
-    ): Promise<any []> {
-        return await this.adminModel.find(AdminData).sort({add_time: -1}).exec();
+    //查询全部
+    public async findAll(): Promise<any []> {
+        return await this.adminModel.find({},this.Keys).sort({add_time: -1}).exec();
     }
 
 
@@ -43,12 +42,12 @@ export class AdminService {
 
     //根据id查询单个
     public async findById(id: string): Promise<any> {
-        return await this.adminModel.findById(id).exec()
+        return await this.adminModel.findById(id, this.Keys).exec()
     }
 
 
     //删除信息
     public async deleteOne(id: string): Promise<any> {
-        return await this.adminModel.deleteOne({_id: id}).exec()
+        return await this.adminModel.deleteOne({_id: id})
     }
 }

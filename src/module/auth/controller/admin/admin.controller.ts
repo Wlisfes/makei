@@ -32,6 +32,7 @@ export class AdminController {
         private readonly toolService: ToolService
     ){}
 
+
     @Get()
     Index() {
         return 'admin'
@@ -52,9 +53,9 @@ export class AdminController {
                 userName: body.userName
             })
             if(One) {
-                if(One.Email === body.Email) {
-                    throw new HttpException('Email已存在！', HttpStatus.BAD_REQUEST)
-                }
+                // if(One.Email === body.Email) {
+                //     throw new HttpException('Email已存在！', HttpStatus.BAD_REQUEST)
+                // }
                 throw new HttpException('userName已存在！', HttpStatus.BAD_REQUEST)
             }
 
@@ -89,7 +90,7 @@ export class AdminController {
         try {
             const result = await this.adminService.getmodel().findOne({
                 userName: body.userName
-            })
+            }, `status nickName userName Avatar Email add_time`)
             if(result) {
                 if(this.toolService.getMD5(body.password) === result.password) {
                     return this.toolService.success({
@@ -111,9 +112,9 @@ export class AdminController {
 
     //获取全部管理员
     @Get('findAll')
-    public async findAll(@Query() query): Promise<any> {
+    public async findAll(): Promise<any> {
         try {
-            const result = await this.adminService.findAll(query)
+            const result = await this.adminService.findAll()
             return this.toolService.success({
                 data: result,
                 message: '获取成功！',
@@ -127,8 +128,7 @@ export class AdminController {
 
     //根据id获取
     @Get('findById')
-    @UsePipes(new ValidationPipe())
-    public async findById(@Query() query: isId): Promise<any> {
+    public async findById(@Query() query): Promise<any> {
         try {
             const result = await this.adminService.findById(query.id)
             if(result) {
@@ -153,8 +153,13 @@ export class AdminController {
     public async deleteOne(@Query() query: isId): Promise<any> {
         try {
             const result = await this.adminService.deleteOne(query.id)
-
-            console.log(result)
+            if(result.deletedCount === 1) {
+                return this.toolService.success({
+                    message: '删除成功！',
+                    code: HttpStatus.OK
+                })
+            }
+            throw new HttpException('id错误！', HttpStatus.BAD_REQUEST)
         } catch (error) {
             throw new HttpException(error.message, error.status || HttpStatus.BAD_REQUEST)
         }
@@ -162,7 +167,7 @@ export class AdminController {
 
 
     //修改用户信息
-    @Put('update')
+    @Post('update')
     @UsePipes(new ValidationPipe())
     public async updateOne(@Body() body: isId): Promise<any> {
 
