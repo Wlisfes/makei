@@ -3,7 +3,6 @@ import {
     Get,
     Post,
     Delete,
-    Put,
     Query,
     Body,
     UseInterceptors,
@@ -25,7 +24,10 @@ import { isId } from '../../../../common/validator/common.dto';
 
 
 
+
+
 @Controller('api/auth/admin')
+
 export class AdminController {
     constructor(
         private readonly adminService: AdminService,
@@ -34,7 +36,7 @@ export class AdminController {
 
 
     @Get()
-    Index() {
+    async Index() {
         return 'admin'
     }
     

@@ -9,7 +9,7 @@ import { HttpExceptionFilter } from './common/filter/http-exception.filter';
 @Module({
   imports: [
     AuthModule,
-    MongooseModule.forRoot('mongodb://localhost/makei', {
+    MongooseModule.forRoot('mongodb://120.25.123.165/makei', {
       useUnifiedTopology: true 
     })
   ],
