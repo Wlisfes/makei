@@ -1,5 +1,5 @@
 {
-  "name": "makei",
+  "name": "kst",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -22,18 +22,10 @@
   "dependencies": {
     "@nestjs/common": "^6.0.0",
     "@nestjs/core": "^6.0.0",
-    "@nestjs/mongoose": "^6.1.2",
     "@nestjs/platform-express": "^6.0.0",
-    "class-transformer": "^0.2.3",
-    "class-validator": "^0.10.2",
-    "express-session": "^1.17.0",
-    "md5": "^2.2.1",
-    "moment": "^2.24.0",
-    "mongoose": "^5.7.7",
     "reflect-metadata": "^0.1.12",
     "rimraf": "^2.6.2",
-    "rxjs": "^6.3.3",
-    "svg-captcha": "^1.4.0"
+    "rxjs": "^6.3.3"
   },
   "devDependencies": {
     "@nestjs/testing": "^6.0.0",
