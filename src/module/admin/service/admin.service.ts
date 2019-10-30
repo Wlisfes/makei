@@ -1,28 +1,34 @@
 import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { AdminSchema } from '../../../schema/admin.schema'
+import { User } from '../../../common/interface/admin.interface';
 
 @Injectable()
 export class AdminService {
+    private readonly flterKey:string;
     constructor(
         @InjectModel('Admin') private readonly adminModel: Model
-    ) {}
+    ) {
+        this.flterKey = `nickName status userName password Email add_time`
+    }
 
 
-    public async createAdminUser(User): Promise<any> {
-        const createAdmin = new this.adminModel(User)
+    //新增注册
+    public async createAdminUser(user: User): Promise<User> {
+        const createAdmin = new this.adminModel(user)
         return await createAdmin.save()
     }
 
 
-    public async findOne(userName: string): Promise<any> {
-        return await this.adminModel.findOne({userName: userName}).exec()
+    //查找登录
+    public async findOne(userName: string): Promise<User> {
+        return await this.adminModel.findOne({userName: userName}, this.flterKey).exec()
     }
 
     
-    public async findAll(): Promise<any> {
-        return this.adminModel.find().exec()
+    //查找全部
+    public async findAll(): Promise<User []> {
+        return this.adminModel.find({}, this.flterKey).exec()
     }
 
 }
