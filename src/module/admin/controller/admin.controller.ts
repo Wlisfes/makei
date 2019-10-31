@@ -1,9 +1,15 @@
-import { Controller, Headers, Get, Post, Body, Query, HttpStatus, HttpException, UseInterceptors, UploadedFile } from '@nestjs/common';
+import {
+    Controller, Headers, Get, Post, Body,
+    HttpStatus, HttpException, UseInterceptors,
+    UploadedFile, UseGuards
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthService } from '../../auth/service/auth.service';
 import { AdminService } from '../service/admin.service';
 import { ToolService } from '../../../common/service/tool.service';
 import { User } from '../../../common/interface/admin.interface';
+import { Roles } from '../../../common/decorator/roles.decorator';
+
 
 import * as fs from 'fs';
 import * as path from 'path';
@@ -87,27 +93,25 @@ export class AdminController {
 
 
     @Get('info')
+    @Roles('admin')
     async getInfo(@Headers('authorization') token: string): Promise<any> {
         try {
             const Auth = await this.authService.verifyToken(token)
-            const AuthNode = await this.authService.findOne(Auth.uid)
-            if(AuthNode && AuthNode.access_token === token) {
-                const Info = await this.adminService.findOne(Auth.name)
-                return this.toolService.success({
-                    code: HttpStatus.OK,
-                    message: '获取成功！',
-                    data: Info
-                })
-            }
-            throw new HttpException('token错误！', HttpStatus.UNAUTHORIZED)
+            const Info = await this.adminService.findOne(Auth.name)
+            return this.toolService.success({
+                code: HttpStatus.OK,
+                message: '获取成功！',
+                data: Info
+            })
         } catch (error) {
             throw new HttpException('token错误！', HttpStatus.UNAUTHORIZED)
         }
     }
 
 
-    @Post('findAll')
+    @Get('findAll')
     public async findAll(): Promise<any> {
 
+        return true
     }
 }

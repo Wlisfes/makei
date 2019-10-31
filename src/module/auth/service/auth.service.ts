@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
+import { Auth } from '../../../common/interface/auth.interface';
 import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class AuthService {
     private secret: string;
     constructor(
-        @InjectModel('Auth') private readonly authModel: Model
+        @InjectModel('Auth') private readonly authModel: Model<Auth>
     ) {
         this.secret = 'jwtlisfes'
     }
@@ -38,7 +39,7 @@ export class AuthService {
      * 解密
      * @param token 
      */
-    public async verifyToken(token: string): Promise<any> {
+    public async verifyToken(token: string): Promise<Auth> {
         const info = jwt.verify(token, this.secret)
         return info
     }
@@ -48,7 +49,7 @@ export class AuthService {
      * 查询token
      * @param uid 
      */
-    public async findOne(uid: string): Promise<any> {
+    public async findOne(uid: string): Promise<Auth> {
         return await this.authModel.findOne({uid}, `uid access_token`).exec()
     }
 
