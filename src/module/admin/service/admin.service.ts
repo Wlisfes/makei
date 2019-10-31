@@ -22,7 +22,7 @@ export class AdminService {
 
     //查找登录
     public async findOne(userName: string): Promise<User> {
-        return await this.adminModel.findOne({userName: userName}, this.flterKey).exec()
+        return await this.adminModel.findOne({userName}, this.flterKey).exec()
     }
 
     
