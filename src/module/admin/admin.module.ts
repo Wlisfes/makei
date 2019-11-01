@@ -26,7 +26,7 @@ export class AdminModule implements NestModule{
       .apply(AuthMiddleware)
       .forRoutes(
         { path: '/api/admin/info', method: RequestMethod.GET },
-        { path: '/api/admin/findAll', method: RequestMethod.GET }
+        // { path: '/api/admin/findAll', method: RequestMethod.GET }
       )
   }
 }

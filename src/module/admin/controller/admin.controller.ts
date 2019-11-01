@@ -1,7 +1,7 @@
 import {
     Controller, Headers, Get, Post, Body,
     HttpStatus, HttpException, UseInterceptors,
-    UploadedFile, UseGuards
+    UploadedFile
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthService } from '../../auth/service/auth.service';
@@ -9,6 +9,7 @@ import { AdminService } from '../service/admin.service';
 import { ToolService } from '../../../common/service/tool.service';
 import { User } from '../../../common/interface/admin.interface';
 import { Roles } from '../../../common/decorator/roles.decorator';
+
 
 
 import * as fs from 'fs';
@@ -30,22 +31,23 @@ export class AdminController {
     @Post('create')
     @UseInterceptors(FileInterceptor('file'))
     public async createAdminUser(@Body() body: User, @UploadedFile() file): Promise<any> {
-        console.log(body)
-        if(!body.userName) throw new HttpException('userName不能为空！', HttpStatus.BAD_REQUEST)
-        if(!body.password) throw new HttpException('password不能为空！', HttpStatus.BAD_REQUEST)
-        if(!body.nickName) throw new HttpException('nickName不能为空！', HttpStatus.BAD_REQUEST)
-        if(!body.Email) throw new HttpException('Email不能为空！', HttpStatus.BAD_REQUEST)
-        if(!file) throw new HttpException('file不能为空！', HttpStatus.BAD_REQUEST)
+        if(!body.userName) return this.toolService.fali({code: HttpStatus.BAD_REQUEST, message: 'userName不能为空！'})
+        if(!body.password) return this.toolService.fali({code: HttpStatus.BAD_REQUEST, message: 'password不能为空！'})
+        if(!body.nickName) return this.toolService.fali({code: HttpStatus.BAD_REQUEST, message: 'nickName不能为空！'})    
+        if(!body.Email) return this.toolService.fali({code: HttpStatus.BAD_REQUEST, message: 'Email不能为空！'})
+        if(!file) return this.toolService.fali({code: HttpStatus.BAD_REQUEST, message: 'file不能为空！'})
 
-        const One = await this.adminService.findOne(body.userName,)
+        const One = await this.adminService.findOne(body.userName)
+        if(One) return this.toolService.fali({code: HttpStatus.BAD_REQUEST, message: 'userName已注册！'})
 
-        if(One) throw new HttpException('userName已注册！', HttpStatus.BAD_REQUEST)
-        if(One.Email === body.Email) throw new HttpException('Email已注册！', HttpStatus.BAD_REQUEST)
+        const OneEmail = await this.adminService.findEmail(body.Email)
+        if(OneEmail) return this.toolService.fali({code: HttpStatus.BAD_REQUEST, message: 'Email已注册！'})
 
+        
         //图片存储
         const After = file.originalname.substring(file.originalname.lastIndexOf('.'))  //图片后辍
         const Rename = `${Date.now()}${After}`  //图片重命名
-        const Write = fs.createWriteStream(path.join(__dirname, '../../../../../public/upload/avatar', Rename))
+        const Write = fs.createWriteStream(path.join(__dirname, '../../../../public/upload/avatar', Rename))
             Write.write(file.buffer)
 
         const result = await this.adminService.createAdminUser({
@@ -55,7 +57,7 @@ export class AdminController {
             Email: body.Email,
             Avatar: `/upload/avatar/${Rename}`
         })
-        this.toolService.success({
+        return this.toolService.success({
             code: HttpStatus.OK,
             message: '注册成功！',
             data: result
@@ -69,6 +71,7 @@ export class AdminController {
      */
     @Post('login')
     async login(@Body() body): Promise<any> {
+        console.log(body)
         const result = await this.adminService.findOne(body.userName)
         if(result) {
             if(result.password === this.toolService.signMD5(body.password)) {

@@ -20,9 +20,15 @@ export class AdminService {
     }
 
 
-    //查找登录
+    //查找用户
     public async findOne(userName: string): Promise<User> {
         return await this.adminModel.findOne({userName}, this.flterKey).exec()
+    }
+
+
+    //查找邮箱
+    public async findEmail(Email: string): Promise<User> {
+        return await this.adminModel.findOne({Email}, this.flterKey).exec()
     }
 
     

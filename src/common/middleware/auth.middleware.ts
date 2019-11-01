@@ -23,6 +23,7 @@ export class AuthMiddleware implements NestMiddleware {
       else {
         const Auth = await this.authService.verifyToken(token)
         const One = await this.authService.findOne(Auth.uid)
+        console.log(One)
         if(One.access_token === token) {
           next()
         }
