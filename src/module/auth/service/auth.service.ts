@@ -3,6 +3,8 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { DecryptAuth, Auth } from '../../../common/interface/auth.interface';
 import * as jwt from 'jsonwebtoken';
+import * as svgCaptcha from 'svg-captcha';
+
 
 @Injectable()
 export class AuthService {
@@ -84,5 +86,21 @@ export class AuthService {
      */
     public async remove(uid: string): Promise<any> {
         return this.authModel.remove({uid})
+    }
+
+
+    /**
+     * 验证码
+     */
+    public async svgCode(): Promise<any> {
+        const Code = svgCaptcha.create({
+            fontSize: 36,
+            noise: 2,
+            width: 118,
+            height: 40,
+            inverse: true,
+            background: '#cc9966'
+        })
+        return Code;
     }
 }

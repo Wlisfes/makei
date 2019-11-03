@@ -1,7 +1,7 @@
 import {
     Controller, Headers, Get, Post, Body,
     HttpStatus, HttpException, UseInterceptors,
-    UploadedFile
+    UploadedFile, Request, Response
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthService } from '../../auth/service/auth.service';
@@ -10,10 +10,9 @@ import { ToolService } from '../../../common/service/tool.service';
 import { User } from '../../../common/interface/admin.interface';
 import { Roles } from '../../../common/decorator/roles.decorator';
 
-
-
 import * as fs from 'fs';
 import * as path from 'path';
+
 
 @Controller('api/admin')
 export class AdminController {
@@ -22,7 +21,16 @@ export class AdminController {
         private readonly adminService: AdminService,
         private readonly toolService: ToolService
     ) {}
+    
 
+    @Get('code')
+    public async svgCode(@Request() req, @Response() res): Promise<any> {
+        const Code = await this.authService.svgCode()
+
+        res.setHeader('Content-Type', 'image/svg+xml');
+        res.write(String(Code.data));
+        res.end();
+    }
     
     /**
      * 注册
