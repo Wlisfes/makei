@@ -8,6 +8,7 @@ export interface User {
     Avatar?: string;
     status?: boolean;
     add_time?: string;
+    code?: String;
 }
 
 

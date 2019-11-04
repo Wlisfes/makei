@@ -14,17 +14,15 @@ export class AuthGuard implements CanActivate {
     async canActivate(context: ExecutionContext): Promise<boolean> {
         try {
             const roles = this.reflector.get<string[]>('roles', context.getHandler())
-            console.log(roles, '守卫')
-            // const request = context.switchToHttp().getRequest();
-            // const token = request.headers['authorization']
-            // if (token) {
-            //     const Auth = await this.authService.verifyToken(token)
-            //     console.log(Auth)
-            // }
+            if(!roles) return true;
+            const request = context.switchToHttp().getRequest();
+            const token = request.headers['authorization']
+            if (token) {
+                const Auth = await this.authService.verifyToken(token)
+                return true;
+            }
         } catch (error) {
 
         }
-
-        return true;
     }
 }

@@ -23,26 +23,34 @@ export class AdminController {
     ) {}
     
 
+    /**
+     * 登陆验证码
+     * @param req 
+     * @param res 
+     */
     @Get('code')
     public async svgCode(@Request() req, @Response() res): Promise<any> {
         const Code = await this.authService.svgCode();
+        req.session.code = Code.text.toUpperCase();
         res.setHeader('Content-Type', 'image/svg+xml');
         res.write(String(Code.data));
         res.end();
     }
     
+
     /**
      * 注册
      * @param body 
      */
     @Post('create')
     @UseInterceptors(FileInterceptor('file'))
-    public async createAdminUser(@Body() body: User, @UploadedFile() file): Promise<any> {
-        if(!body.userName) return this.toolService.fali({code: HttpStatus.BAD_REQUEST, message: 'userName不能为空！'})
-        if(!body.password) return this.toolService.fali({code: HttpStatus.BAD_REQUEST, message: 'password不能为空！'})
-        if(!body.nickName) return this.toolService.fali({code: HttpStatus.BAD_REQUEST, message: 'nickName不能为空！'})    
-        if(!body.Email) return this.toolService.fali({code: HttpStatus.BAD_REQUEST, message: 'Email不能为空！'})
-        if(!file) return this.toolService.fali({code: HttpStatus.BAD_REQUEST, message: 'file不能为空！'})
+    public async createAdminUser(@Request() req, @Body() body: User, @UploadedFile() file): Promise<any> {
+        if(req.session.code !== body.code.toUpperCase()) throw new HttpException('验证码错误！', HttpStatus.BAD_REQUEST);
+        if(!body.userName) throw new HttpException('userName不能为空！', HttpStatus.BAD_REQUEST);
+        if(!body.password) throw new HttpException('password不能为空！', HttpStatus.BAD_REQUEST);
+        if(!body.nickName) throw new HttpException('nickName不能为空！', HttpStatus.BAD_REQUEST);  
+        if(!body.Email) throw new HttpException('Email不能为空！', HttpStatus.BAD_REQUEST);
+        if(!file) throw new HttpException('file不能为空！', HttpStatus.BAD_REQUEST);
 
         const One = await this.adminService.findOne(body.userName)
         if(One) return this.toolService.fali({code: HttpStatus.BAD_REQUEST, message: 'userName已注册！'})
@@ -73,32 +81,66 @@ export class AdminController {
 
 
     /**
-     * 登录
+     * 账户登录
      * @param body 
      */
-    @Post('login')
-    async login(@Body() body): Promise<any> {
-        console.log(body)
+    @Post('login/name')
+    async nameLogin(@Request() req, @Body() body: User): Promise<any> {
+        if(req.session.code !== body.code.toUpperCase())
+            throw new HttpException('验证码错误！', HttpStatus.BAD_REQUEST);
+
         const result = await this.adminService.findOne(body.userName)
-        if(result) {
-            if(result.password === this.toolService.signMD5(body.password)) {
-                const token = await this.authService.signToken(result._id, result.userName)
-                return this.toolService.success({
-                    code: HttpStatus.OK,
-                    message: '登录成功！',
-                    data: {
-                        userName: result.userName,
-                        Avatar: result.Avatar,
-                        nickName: result.nickName,
-                        add_time: result.add_time,
-                        Email: result.Email,
-                        accessToken: token
-                    }
-                })
+
+        if(!result)
+            throw new HttpException('userName错误！', HttpStatus.BAD_REQUEST);
+        if(result.password !== this.toolService.signMD5(body.password))
+            throw new HttpException('password错误！', HttpStatus.BAD_REQUEST);
+        
+        const token = await this.authService.signToken(result._id, result.userName)
+        return this.toolService.success({
+            code: HttpStatus.OK,
+            message: '登录成功！',
+            data: {
+                userName: result.userName,
+                Avatar: result.Avatar,
+                nickName: result.nickName,
+                add_time: result.add_time,
+                Email: result.Email,
+                accessToken: token
             }
-            throw new HttpException('password错误！', HttpStatus.UNAUTHORIZED)
-        }
-        throw new HttpException('userName错误！', HttpStatus.UNAUTHORIZED)
+        })
+    }
+
+
+    /**
+     * 账户登录
+     * @param body 
+     */
+    @Post('login/email')
+    async login(@Request() req, @Body() body: User): Promise<any> {
+        if(req.session.code !== body.code.toUpperCase())
+            throw new HttpException('验证码错误！', HttpStatus.BAD_REQUEST);
+
+        const result = await this.adminService.findEmail(body.Email)
+
+        if(!result)
+            throw new HttpException('Email错误！', HttpStatus.BAD_REQUEST);
+        if(result.password !== this.toolService.signMD5(body.password))
+            throw new HttpException('password错误！', HttpStatus.BAD_REQUEST);
+        
+        const token = await this.authService.signToken(result._id, result.userName)
+        return this.toolService.success({
+            code: HttpStatus.OK,
+            message: '登录成功！',
+            data: {
+                userName: result.userName,
+                Avatar: result.Avatar,
+                nickName: result.nickName,
+                add_time: result.add_time,
+                Email: result.Email,
+                accessToken: token
+            }
+        })
     }
 
 

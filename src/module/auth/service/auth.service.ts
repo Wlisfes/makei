@@ -96,7 +96,7 @@ export class AuthService {
         const Code = svgCaptcha.create({
             fontSize: 36,
             noise: 2,
-            width: 118,
+            width: 128,
             height: 40,
             inverse: true,
             background: '#cc9966'
