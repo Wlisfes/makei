@@ -15,9 +15,6 @@ import { ToolService } from './common/service/tool.service';
 import { AuthGuard } from './common/guard/auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 
-//interceptor  拦截器
-import { FormatInterceptor } from './common/interceptor/format.interceptor'
-import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -32,10 +29,6 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
     {
       provide: APP_GUARD,
       useClass: AuthGuard
-    },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: FormatInterceptor
     }
   ]
 })

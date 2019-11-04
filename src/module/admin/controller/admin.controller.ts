@@ -25,8 +25,7 @@ export class AdminController {
 
     @Get('code')
     public async svgCode(@Request() req, @Response() res): Promise<any> {
-        const Code = await this.authService.svgCode()
-
+        const Code = await this.authService.svgCode();
         res.setHeader('Content-Type', 'image/svg+xml');
         res.write(String(Code.data));
         res.end();
